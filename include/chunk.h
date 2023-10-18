@@ -12,9 +12,9 @@
 #define LUA_SIGNATURE       0x1b4c7561
 #define LUAC_VERSION        0x53
 #define LUAC_FORMAT         0
-#define LUAC_DATA           0x19930d0a1a0a
-#define CINT_SIZE           4
-#define SIZET_SIZE          8
+#define LUAC_DATA           "\x19\x93\x0d\x0a\x1a\x0a"
+#define CINT_SIZE           sizeof(int)
+#define SIZET_SIZE          sizeof(size_t)
 #define INSTRUCTION_SIZE    4
 #define LUA_INTEGER_SIZE    8
 #define LUA_NUMBER_SIZE     8
@@ -135,7 +135,7 @@ private:
 
 class Chunk {
 public:
-    Chunk();
+    explicit Chunk(const char* data);
 private:
     ChunkHeader header_;
     byte_t sizeUpvalue_;
@@ -147,10 +147,12 @@ public:
     ChunkReader(const Slice& data): data_(data) {}
     ChunkReader(const std::string& data): data_(data) {}
     byte_t ReadByte();
+    Slice ReadBytes(uint32_t n);
     uint32_t ReadUint32();
     uint64_t ReadUint64();
     LuaInteger ReadLuaInteger();
     LuaNumber ReadLuaNumber();
+    std::string ReadLuaString();    // TODO: LuaString
 private:
     Slice data_;
 };
